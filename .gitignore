@@ -1,0 +1,27 @@
+01_project/.venv/
+01_project/.env
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+**/.venv/
+**/venv/
+pyvenv.cfg
+
+# Secure / sensitive files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+credentials.json
+secrets.json
+service-account*.json
+*.secret
+**/secrets/
+
