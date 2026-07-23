@@ -8,10 +8,13 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAI, OpenAIEmbeddings
 from langchain_chroma import Chroma
 from openai import OpenAI
+from fastapi import FastAPI, Request, Query
+
 load_dotenv()
 
 r = redis.Redis.from_url(os.environ["REDIS_URL"])
 queue = Queue(connection=r)
+app = FastAPI()
 # try:
 #     r.ping()
 #     print("✅ Redis connected")
@@ -44,9 +47,6 @@ vectorstore = Chroma.from_documents(
 )
 
 
-user_query = input("Enter your query: ")
-
-
 def process_query(user_query):
     results = vectorstore.similarity_search(
         query=user_query,
@@ -69,8 +69,14 @@ def process_query(user_query):
     )
     print(f"Assistant: {response.choices[0].message.content}")
 
+@app.get("/")
+async def root():
+    return {"message": "Hello, World!"}
 
-queue.enqueue(process_query, user_query)
+@app.post("/chat")
+async def chat(query: str = Query(..., description="The user's query")):
+    job = queue.enqueue(process_query, query)
+    return {"job_id": job.id, "status": "queued"}
 
 
 
