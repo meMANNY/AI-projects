@@ -86,4 +86,4 @@ async def get_job_status(job_id: str = Query(..., description="The job ID to che
     job = queue.fetch_job(job_id)
     if job is None:
         return {"error": "Job not found"}
-    return {"job_id": job.id, "status": job.get_status(), "result": job.return_value}
+    return {"job_id": job.id, "status": job.get_status(), "result": job.return_value()}
