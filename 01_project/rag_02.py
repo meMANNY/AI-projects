@@ -87,3 +87,8 @@ async def get_job_status(job_id: str = Query(..., description="The job ID to che
     if job is None:
         return {"error": "Job not found"}
     return {"job_id": job.id, "status": job.get_status(), "result": job.return_value()}
+
+#commands to remember:
+# uvicorn rag_02:app --reload
+#$env:REDIS_URL = (Get-Content .env | Select-String '^REDIS_URL=').ToString().Split('=',2)[1]
+#>>   rq worker --worker-class rq.SimpleWorker --url $env:REDIS_URL 
