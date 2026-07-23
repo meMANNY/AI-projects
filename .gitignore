@@ -24,4 +24,5 @@ secrets.json
 service-account*.json
 *.secret
 **/secrets/
+01_project/chroma_db
 
