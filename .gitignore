@@ -25,4 +25,5 @@ service-account*.json
 *.secret
 **/secrets/
 01_project/chroma_db
+01_project/.venv-graph
 
