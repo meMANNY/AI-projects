@@ -3,10 +3,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from langgraph.graph import StateGraph, START,END
+from langgraph.checkpoint.mongodb import MongoDBSaver
 from typing_extensions import TypedDict
 from langgraph.graph.message import add_messages
 from typing import Annotated
 from openai import OpenAI
+
+MONGODB_URI = os.getenv("MONGODB_URI")
 
 client = OpenAI(api_key=os.getenv("OPENAI_API"))  # Replace with your actual OpenAI API key
 
@@ -45,7 +48,18 @@ graph_builder.add_edge(START, "chatbot")
 graph_builder.add_edge("chatbot", "sample")
 graph_builder.add_edge("sample", END)
 
-graph = graph_builder.compile()
+# The checkpointer (and its Mongo connection) is only alive inside this block,
+# so both compile() and invoke() must run within it.
+with MongoDBSaver.from_conn_string(MONGODB_URI, db_name="langgraph") as checkpointer:
+    graph = graph_builder.compile(checkpointer=checkpointer)
 
-updated_graph = graph.invoke({"messages": [{"role": "user", "content": "Hi I am Aman!"}]})
-print("\n\nupdated_graph:", updated_graph)
+    # thread_id keys the persisted state. Reuse the same id to resume a conversation.
+    config = {"configurable": {"thread_id": "aman-1"}}
+
+    updated_graph = graph.invoke(
+        {"messages": [{"role": "user", "content": "what is my name?"}]},
+        config=config,
+    )
+    print("\n\n=== Conversation ===")
+    for m in updated_graph["messages"]:
+        m.pretty_print()
