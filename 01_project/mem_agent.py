@@ -39,11 +39,11 @@ config = {
 }
 
 m = Memory.from_config(config)
-messages = [
-    {"role": "user", "content": "Hi, I'm Alex. I love basketball and gaming."},
-    {"role": "assistant", "content": "Hey Alex! I'll remember your interests."}
-]
-m.add(messages, user_id="alex")
+# messages = [
+#     {"role": "user", "content": "Hi, I'm Aman. I love basketball and gaming."},
+#     {"role": "assistant", "content": "Hey Aman! I'll remember your interests."}
+# ]
+# m.add(messages, user_id="aman")
 results = m.search("What do you know about me?", filters={"user_id": "alex"})
 
 import json
